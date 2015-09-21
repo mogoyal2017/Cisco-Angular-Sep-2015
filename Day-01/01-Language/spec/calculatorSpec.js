@@ -116,6 +116,19 @@ describe("A Calculator", function(){
 		//Assert
 		expect(result).toBe(expectedResult);
 	});
+    it("Should add array of numbers in string format", function(){
+		//Arrange
+
+		var	numbers1 = ["10","20"],
+			numbers2 = ["30","40"],
+			expectedResult = 100;
+
+		//Act
+		var result = add(numbers1, numbers2);
+
+		//Assert
+		expect(result).toBe(expectedResult);
+	});
 
 	it("Should add nested array of numbers", function(){
 		//Arrange
