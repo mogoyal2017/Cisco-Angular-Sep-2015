@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bug Tracker</title>
+    <style>
+        .closed {
+            color : red;
+            text-decoration: line-through;
+            font-style: italic;
+            font-weight: bold;
+        }
+        div{
+            margin-bottom: 10px;
+        }
+        .stats span{
+            font-size: 16pt;
+        }
+        li{
+            cursor: pointer;
+        }
+    </style>
+    <script>
+    /*
+        1. Add a new bug
+        2. Display a list of bugs
+        3. Toggle the closed status of a bug
+        4. Remove closed bugs
+        5. Display stats
+        6. Search for a bug
+        7. Sort the bugs
+        8. Improvise the bug display
+        9. Persist bugs in the storage
+        10. Display "createdAt" for each bug
+        11. Persist the bugs in the server
+    */
+    </script>
+</head>
+<body>
+    <h1>Bug Tracker</h1>
+    <hr>
+    <div class="content">
+        <div class="stats">
+            <span class="closed">3</span> / <span>5</span>
+        </div>
+        <div class="search">
+            <label for="">Search : </label><input type="text" name="" id="">
+            <label for="">is Closed ? :</label><input type="checkbox" name="" id="">
+        </div>
+        <div class="sort">
+            <label for="">Sort : </label><input type="text" name="" id="">
+            <label for="">Descending ? :</label><input type="checkbox" name="" id="">
+        </div>
+        <div class="list">
+            <label for="">Bug :</label>
+            <input type="text" name="" id="">
+            <input type="button" value="Add Bug">
+            <input type="button" value="Remove Closed">
+            <ol>
+                <li>Stack overflow error</li>
+                <li>Object reference not found!</li>
+                <li class="closed">User authentication failure</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
