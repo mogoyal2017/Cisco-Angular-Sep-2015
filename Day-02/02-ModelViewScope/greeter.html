@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="jquery.js"></script>
+    <script src="angular.js"></script>
+    <script>
+    function Greeter(){
+        this.firstName = '';
+        this.lastName = '';
+        this.greetMsg = '';
+    }
+    Greeter.prototype.greet = function(){
+        this.greetMsg ='Hi ' + this.firstName + ' ' + this.lastName + ', Have a nice day!';
+    }
+
+     $(function(){
+            //Creation of scope object
+            angular.bootstrap(document.body, []);
+            window.scope = angular.element(document.body).scope();
+
+            //Assign the model to the scope
+            scope.greeter = new Greeter();
+
+            //View Subscriptions
+            //React to user actions
+            $("*[app-model]").each(function(index, element){
+                var $element = $(element),
+                    model = $element.attr("app-model");
+
+                $element.change(function(){
+                    var value = this.value;
+                    scope.$apply(function(){
+                        var expr = model + ' = ' + "'" + value + "'";
+                        scope.$eval(expr);
+                    });
+                });
+
+                scope.$watch(model, function(newValue, oldValue){
+                    $element.val(newValue);
+                });
+            });
+
+            $("*[app-click]").each(function(index, element){
+                var $element = $(element),
+                    expr = $element.attr('app-click');
+                $element.click(function(){
+                    scope.$apply(function(){
+                        scope.$eval(expr);
+                    });
+                });
+            });
+
+            $("*[app-bind]").each(function(index, element){
+                var $element = $(element),
+                    model = $element.attr("app-bind");
+
+                scope.$watch(model, function(newValue, oldValue){
+                    $element.html(newValue);
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <label for="">Name :</label>
+    <input type="text" name="" id="txtFirstName" app-model="greeter.firstName">
+    <input type="text" name="" id="txtLastName" app-model="greeter.lastName">
+    <input type="button" value="Greet" id="btnGreet" app-click="greeter.greet()">
+    <div id="divMessage" app-bind="greeter.greetMsg"></div>
+</body>
+</html>
