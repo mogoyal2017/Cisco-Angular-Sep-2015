@@ -37,19 +37,31 @@
     </script>
     <script src="angular.js"></script>
     <script>
+
         var bugTrackerApp = angular.module("bugTrackerApp", []);
 
-        bugTrackerApp.controller("bugsController", function($scope){
-
-            function Bug(defaults){
-                this.name = defaults.name || '';
-                this.isClosed = defaults.isClosed || '';
-            }
-            Bug.prototype.toggle = function(){
+        bugTrackerApp.value("Bug", function Bug(defaults){
+            this.name = defaults.name || '';
+            this.isClosed = defaults.isClosed || false;
+            this.toggle = function(){
                 this.isClosed = !this.isClosed;
-            };
+            }
+        } );
+
+        /*Convert the following to a value "Bug"*/
+        /*
+        function Bug(defaults){
+            this.name = defaults.name || '';
+            this.isClosed = defaults.isClosed || false;
+        }
+        Bug.prototype.toggle = function(){
+            this.isClosed = !this.isClosed;
+        }
+        */
 
 
+
+        bugTrackerApp.controller("bugsController", function($scope, Bug){
             $scope.bugs = [
                  new Bug({ name : "Stack overflow error", isClosed : false}),
                  new Bug({ name : "Object reference not found error", isClosed : false}),
@@ -87,6 +99,7 @@
             };
 
         });
+
     </script>
 </head>
 <body ng-app="bugTrackerApp">
