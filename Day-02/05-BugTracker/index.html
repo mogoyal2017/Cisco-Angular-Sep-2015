@@ -35,13 +35,28 @@
         11. Persist the bugs in the server
     */
     </script>
+    <script src="angular.js"></script>
+    <script>
+        var bugTrackerApp = angular.module("bugTrackerApp", []);
+
+        bugTrackerApp.controller("bugsController", function($scope){
+            $scope.bugs = [
+                "Stack overflow error",
+                "Object reference not found error",
+                "User authentication failure",
+                "Server communication failure"
+            ];
+        });
+    </script>
 </head>
-<body>
+<body ng-app="bugTrackerApp">
     <h1>Bug Tracker</h1>
     <hr>
-    <div class="content">
+    <div class="content" ng-controller="bugsController">
         <div class="stats">
-            <span class="closed">3</span> / <span>5</span>
+            <span class="closed">3</span>
+            /
+            <span>{{bugs.length}}</span>
         </div>
         <div class="search">
             <label for="">Search : </label><input type="text" name="" id="">
@@ -53,13 +68,11 @@
         </div>
         <div class="list">
             <label for="">Bug :</label>
-            <input type="text" name="" id="">
+            <input type="text">
             <input type="button" value="Add Bug">
             <input type="button" value="Remove Closed">
             <ol>
-                <li>Stack overflow error</li>
-                <li>Object reference not found!</li>
-                <li class="closed">User authentication failure</li>
+               <li>{{bugs}}</li>
             </ol>
         </div>
     </div>
