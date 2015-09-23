@@ -40,37 +40,42 @@
 
         var bugTrackerApp = angular.module("bugTrackerApp", []);
 
-        bugTrackerApp.value("Bug", function Bug(defaults){
+        /*bugTrackerApp.value("Bug", function Bug(defaults){
             this.name = defaults.name || '';
             this.isClosed = defaults.isClosed || false;
             this.toggle = function(){
                 this.isClosed = !this.isClosed;
             }
-        } );
+        } );*/
 
-        /*Convert the following to a value "Bug"*/
-        /*
-        function Bug(defaults){
-            this.name = defaults.name || '';
-            this.isClosed = defaults.isClosed || false;
-        }
-        Bug.prototype.toggle = function(){
-            this.isClosed = !this.isClosed;
-        }
-        */
+        bugTrackerApp.value("defaultBugName", "[Default Bug Name]");
+
+        bugTrackerApp.factory("bug", function(){
+            function toggle(){
+                this.isClosed = !this.isClosed;
+            };
+
+            return function (defaults){
+                return {
+                    name : defaults.name || '',
+                    isClosed : defaults.isClosed || false,
+                    toggle : toggle
+                };
+            }
+        });
 
 
 
-        bugTrackerApp.controller("bugsController", function($scope, Bug){
+        bugTrackerApp.controller("bugsController", function($scope, bug, $http){
             $scope.bugs = [
-                 new Bug({ name : "Stack overflow error", isClosed : false}),
-                 new Bug({ name : "Object reference not found error", isClosed : false}),
-                 new Bug({ name : "User authentication failure", isClosed : false}),
-                 new Bug({ name : "Server communication failure", isClosed : false})
+                 bug({ name : "Stack overflow error", isClosed : true}),
+                 bug({ name : "Object reference not found error", isClosed : false}),
+                 bug({ name : "User authentication failure", isClosed : true}),
+                 bug({ name : "Server communication failure", isClosed : false})
             ];
 
             $scope.addNew = function(newBugName){
-                var newBug = new Bug({
+                var newBug = bug({
                     name : newBugName,
                     isClosed : false
                 });
@@ -112,8 +117,11 @@
             <span>{{bugs.length}}</span>
         </div>
         <div class="search">
-            <label for="">Search : </label><input type="text">
-            <label for="">is Closed ? :</label><input type="checkbox">
+            <label for="">Search : </label>
+            <input type="text" ng-model="searchBug.name">
+            <label for="">is Closed ? :</label>
+            <input type="checkbox" ng-model="searchBug.isClosed">
+            <input type="button" value="Show All" ng-click="searchBug.isClosed = undefined">
         </div>
         <div class="sort">
             <label for="">Sort : </label><input type="text">
@@ -125,9 +133,9 @@
             <input type="button" value="Add Bug" ng-click="addNew(newBug)">
             <input type="button" value="Remove Closed" ng-click="removeClosed()">
             <ol>
-               <li ng-repeat="bug in bugs" ng-click="toggleBug(bug)"
+               <li ng-repeat="bug in bugs | filter:searchBug" ng-click="toggleBug(bug)"
                    ng-class="{closed : bug.isClosed}"
-               >{{bug}}</li>
+               >{{bug.name | lowercase}}</li>
             </ol>
         </div>
     </div>
