@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bug Tracker</title>
+    <style>
+        .closed {
+            color : red;
+            text-decoration: line-through;
+            font-style: italic;
+            font-weight: bold;
+        }
+        div{
+            margin-bottom: 10px;
+        }
+        .stats span{
+            font-size: 16pt;
+        }
+        ol{
+            list-style: none;
+            width: 60%
+        }
+        li{
+            border : 2px solid gray;
+            background-color: lightgray;
+            border-radius: 4px;
+            padding: 4px;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+        li div{
+            margin: 3px;
+            font-size: 14pt;
+        }
+        li span{
+            font-size: small;
+            font-style: italic;
+        }
+    </style>
+    <script>
+    /*
+        1. Add a new bug - done
+        2. Display a list of bugs - done
+        3. Toggle the closed status of a bug - done
+        4. Remove closed bugs - done
+        5. Display stats - done
+        6. Search for a bug - done
+        7. Sort the bugs - done
+        8. Improvise the bug display
+        9. Persist bugs in the storage
+        10. Display "createdAt" for each bug
+        11. Persist the bugs in the server
+    */
+    </script>
+    <script src="angular.js"></script>
+    <script src="moment.js"></script>
+    <script src="utils.js"></script>
+    <script src="utils.filters.js"></script>
+    <script>
+
+
+
+        var bugTrackerApp = angular.module("bugTrackerApp", ["utils"]);
+
+        bugTrackerApp.value("defaultTrimLength", 30);
+
+        /*bugTrackerApp.value("Bug", function Bug(defaults){
+            this.name = defaults.name || '';
+            this.isClosed = defaults.isClosed || false;
+            this.toggle = function(){
+                this.isClosed = !this.isClosed;
+            }
+        } );*/
+
+        bugTrackerApp.value("defaultBugName", "[Default Bug Name]");
+
+        bugTrackerApp.factory("bug", function(){
+            function toggle(){
+                this.isClosed = !this.isClosed;
+            };
+
+            return function (defaults){
+                return {
+                    id : defaults.id || 0,
+                    name : defaults.name || '',
+                    isClosed : defaults.isClosed || false,
+                    createdAt : defaults.createdAt || new Date(),
+                    toggle : toggle
+                };
+            }
+        });
+
+
+        bugTrackerApp.filter("toClosedCount", function(){
+            return function(bugs){
+                return bugs.reduce(function(closedCount, bug){
+                    return bug.isClosed ? ++closedCount : closedCount;
+                },0);
+            }
+        });
+
+        bugTrackerApp.controller("bugsController", function($scope, bug){
+             $scope.bugs = [];
+
+            $scope.addNew = function(newBugName){
+                var newBug = bug({
+                    name : newBugName,
+                    isClosed : false
+                });
+                $scope.bugs.push(newBug);
+            };
+
+            $scope.toggleBug = function(bug){
+                bug.toggle();
+            };
+
+            $scope.removeClosed = function(){
+                for(var i=$scope.bugs.length-1; i >= 0; i--){
+                    if ($scope.bugs[i].isClosed)
+                        $scope.bugs.splice(i,1);
+                }
+            };
+        });
+    </script>
+</head>
+<body ng-app="bugTrackerApp">
+    <h1>Bug Tracker</h1>
+    <h4>[Server]</h4>
+    <hr>
+    <div class="content" ng-controller="bugsController">
+        <div class="stats">
+            <span class="closed">{{bugs | toClosedCount}}</span>
+            /
+            <span>{{bugs.length}}</span>
+        </div>
+        <div class="search">
+            <label for="">Search : </label>
+            <input type="text" ng-model="searchBug.name">
+            <label for="">is Closed ? :</label>
+            <input type="checkbox" ng-model="searchBug.isClosed">
+            <input type="button" value="Show All" ng-click="searchBug.isClosed = undefined">
+        </div>
+        <div class="sort">
+            <label for="">Sort : </label>
+            <input type="text" ng-model="bugOrder">
+            <label for="">Descending ? :</label>
+            <input type="checkbox" ng-model="bugOrderBy">
+        </div>
+        <div class="list">
+            <label for="">Bug :</label>
+            <input type="text" ng-model="newBug">
+            <input type="button" value="Add Bug" ng-click="addNew(newBug)">
+            <input type="button" value="Remove Closed" ng-click="removeClosed()">
+            <ol>
+               <li ng-repeat="bug in bugs | filter:searchBug | orderBy:bugOrder:bugOrderBy" >
+                  <div ng-click="toggleBug(bug)"
+                   ng-class="{closed : bug.isClosed}">
+                       {{bug.name | trimText}}
+                   </div>
+                   <span>{{bug.createdAt | toMoment}}</span>
+               </li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
