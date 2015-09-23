@@ -16,8 +16,25 @@
         .stats span{
             font-size: 16pt;
         }
+        ol{
+            list-style: none;
+            width: 60%
+        }
         li{
+            border : 2px solid gray;
+            background-color: lightgray;
+            border-radius: 4px;
+            padding: 4px;
             cursor: pointer;
+            margin-bottom: 5px;
+        }
+        li div{
+            margin: 3px;
+            font-size: 14pt;
+        }
+        li span{
+            font-size: small;
+            font-style: italic;
         }
     </style>
     <script>
@@ -59,6 +76,7 @@
                 return {
                     name : defaults.name || '',
                     isClosed : defaults.isClosed || false,
+                    createdAt : defaults.createdAt || new Date(),
                     toggle : toggle
                 };
             }
@@ -73,12 +91,39 @@
             }
         });
 
+        bugTrackerApp.value("defaultTrimLength", 20);
+
+        bugTrackerApp.filter("trimText", function(defaultTrimLength){
+            return function(value, trimLength){
+                trimLength = trimLength || defaultTrimLength;
+                return value.length > trimLength
+                    ? value.substr(0,trimLength) + '...'
+                    : value;
+            }
+        });
+
         bugTrackerApp.controller("bugsController", function($scope, bug, $http){
             $scope.bugs = [
-                 bug({ name : "Stack overflow error", isClosed : true}),
-                 bug({ name : "Object reference not found error", isClosed : false}),
-                 bug({ name : "User authentication failure", isClosed : true}),
-                 bug({ name : "Server communication failure", isClosed : false})
+                 bug({
+                     name : "Stack overflow error",
+                     isClosed : true,
+                     createdAt : new Date(2015, 8, 20)
+                 }),
+                 bug({
+                     name : "Object reference not found error",
+                     isClosed : false,
+                     createdAt : new Date(2015, 8, 21)
+                 }),
+                 bug({
+                     name : "User authentication failure",
+                     isClosed : true,
+                     createdAt : new Date(2015, 8, 18)
+                 }),
+                 bug({
+                     name : "Server communication failure",
+                     isClosed : false,
+                     createdAt : new Date(2015, 8, 23)
+                 })
             ];
 
             $scope.addNew = function(newBugName){
@@ -142,9 +187,13 @@
             <input type="button" value="Add Bug" ng-click="addNew(newBug)">
             <input type="button" value="Remove Closed" ng-click="removeClosed()">
             <ol>
-               <li ng-repeat="bug in bugs | filter:searchBug | orderBy:bugOrder:bugOrderBy" ng-click="toggleBug(bug)"
-                   ng-class="{closed : bug.isClosed}"
-               >{{bug.name | lowercase}}</li>
+               <li ng-repeat="bug in bugs | filter:searchBug | orderBy:bugOrder:bugOrderBy" >
+                  <div ng-click="toggleBug(bug)"
+                   ng-class="{closed : bug.isClosed}">
+                       {{bug.name | trimText:30}}
+                   </div>
+                   <span>{{bug.createdAt | date:'dd-MMM-yyyy'}}</span>
+               </li>
             </ol>
         </div>
     </div>
