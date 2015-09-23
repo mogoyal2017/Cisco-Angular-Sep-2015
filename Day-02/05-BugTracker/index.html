@@ -53,9 +53,16 @@
     */
     </script>
     <script src="angular.js"></script>
+    <script src="moment.js"></script>
+    <script src="utils.js"></script>
+    <script src="utils.filters.js"></script>
     <script>
 
-        var bugTrackerApp = angular.module("bugTrackerApp", []);
+
+
+        var bugTrackerApp = angular.module("bugTrackerApp", ["utils"]);
+
+        bugTrackerApp.value("defaultTrimLength", 30);
 
         /*bugTrackerApp.value("Bug", function Bug(defaults){
             this.name = defaults.name || '';
@@ -91,19 +98,8 @@
             }
         });
 
-        bugTrackerApp.value("defaultTrimLength", 20);
-
-        bugTrackerApp.filter("trimText", function(defaultTrimLength){
-            return function(value, trimLength){
-                trimLength = trimLength || defaultTrimLength;
-                return value.length > trimLength
-                    ? value.substr(0,trimLength) + '...'
-                    : value;
-            }
-        });
-
-        bugTrackerApp.controller("bugsController", function($scope, bug, $http){
-            $scope.bugs = [
+        bugTrackerApp.controller("bugsController", function($scope, bug){
+             $scope.bugs = [
                  bug({
                      name : "Stack overflow error",
                      isClosed : true,
@@ -144,19 +140,7 @@
                         $scope.bugs.splice(i,1);
                 }
             };
-
-            $scope.getClosedCount = function(){
-                /*return $scope.bugs.filter(function(bug){
-                    return bug.isClosed;
-                }).length;*/
-
-                return $scope.bugs.reduce(function(closedCount, bug){
-                    return bug.isClosed ? ++closedCount : closedCount;
-                },0);
-            };
-
         });
-
     </script>
 </head>
 <body ng-app="bugTrackerApp">
@@ -190,9 +174,9 @@
                <li ng-repeat="bug in bugs | filter:searchBug | orderBy:bugOrder:bugOrderBy" >
                   <div ng-click="toggleBug(bug)"
                    ng-class="{closed : bug.isClosed}">
-                       {{bug.name | trimText:30}}
+                       {{bug.name | trimText}}
                    </div>
-                   <span>{{bug.createdAt | date:'dd-MMM-yyyy'}}</span>
+                   <span>{{bug.createdAt | toMoment}}</span>
                </li>
             </ol>
         </div>
