@@ -27,8 +27,8 @@
         3. Toggle the closed status of a bug - done
         4. Remove closed bugs - done
         5. Display stats - done
-        6. Search for a bug
-        7. Sort the bugs
+        6. Search for a bug - done
+        7. Sort the bugs - done
         8. Improvise the bug display
         9. Persist bugs in the storage
         10. Display "createdAt" for each bug
@@ -65,6 +65,13 @@
         });
 
 
+        bugTrackerApp.filter("toClosedCount", function(){
+            return function(bugs){
+                return bugs.reduce(function(closedCount, bug){
+                    return bug.isClosed ? ++closedCount : closedCount;
+                },0);
+            }
+        });
 
         bugTrackerApp.controller("bugsController", function($scope, bug, $http){
             $scope.bugs = [
@@ -112,7 +119,7 @@
     <hr>
     <div class="content" ng-controller="bugsController">
         <div class="stats">
-            <span class="closed">{{getClosedCount()}}</span>
+            <span class="closed">{{bugs | toClosedCount}}</span>
             /
             <span>{{bugs.length}}</span>
         </div>
@@ -124,8 +131,10 @@
             <input type="button" value="Show All" ng-click="searchBug.isClosed = undefined">
         </div>
         <div class="sort">
-            <label for="">Sort : </label><input type="text">
-            <label for="">Descending ? :</label><input type="checkbox">
+            <label for="">Sort : </label>
+            <input type="text" ng-model="bugOrder">
+            <label for="">Descending ? :</label>
+            <input type="checkbox" ng-model="bugOrderBy">
         </div>
         <div class="list">
             <label for="">Bug :</label>
@@ -133,7 +142,7 @@
             <input type="button" value="Add Bug" ng-click="addNew(newBug)">
             <input type="button" value="Remove Closed" ng-click="removeClosed()">
             <ol>
-               <li ng-repeat="bug in bugs | filter:searchBug" ng-click="toggleBug(bug)"
+               <li ng-repeat="bug in bugs | filter:searchBug | orderBy:bugOrder:bugOrderBy" ng-click="toggleBug(bug)"
                    ng-class="{closed : bug.isClosed}"
                >{{bug.name | lowercase}}</li>
             </ol>
