@@ -99,32 +99,123 @@
             }
         });
 
-        bugTrackerApp.factory("bugService", function($http, bug){
-            return {
+        //As a factory
+        /*bugTrackerApp.factory("bugService", function($http, bug, $q){
+            //return {
+                //getAll : function(){
+                //    var deferred = $q.defer();
+                //
+                //    var promise = $http.get(_baseUrl);
+                //    promise.then(function(response){
+                //        var result = [];
+                //        for(var i=0; i<response.data.length; i++){
+                //            result.push(bug(response.data[i]));
+                //        }
+                //        deferred.resolve(result);
+                //    });
+                //
+                //    return deferred.promise;
+                //}
                 getAll : function(){
-                    var promise = $http.get('/bugs/');
-                    promise.then(function(response){
-                        $scope.bugs = response.data.map(function(dataObj){
-                            return bug(dataObj);
-                        });
-                    });
+                    return $http
+                            .get('/bugs/')
+                            .then(function(response){
+                                var result = [];
+                                for(var i=0; i<response.data.length; i++){
+                                    result.push(bug(response.data[i]));
+                                }
+                                return result;
+                            });
                 }
             }
-        })
+        });*/
+
+        //As a Service
+       /* bugTrackerApp.service("bugService", function($http, bug, $q){
+            this.getAll = function(){
+                return $http
+                        .get('/bugs/')
+                        .then(function(response){
+                            var result = [];
+                            for(var i=0; i<response.data.length; i++){
+                                result.push(bug(response.data[i]));
+                            }
+                            return result;
+                        });
+            }
+        });*/
+
+        //As a provider
+        bugTrackerApp.provider("bugService", function(){
+            var _baseUrl = '/bugs/';
+            function bugServiceFactory($http, bug, $q){
+                return {
+                    getAll : function(){
+                        return $http
+                                .get(_baseUrl)
+                                .then(function(response){
+                                    var result = [];
+                                    for(var i=0; i<response.data.length; i++){
+                                        result.push(bug(response.data[i]));
+                                    }
+                                    return result;
+                                });
+                    },
+                    save : function(bugInputData){
+                        var promise = null;
+                        if (bugInputData.id){
+                            promise = $http.put(_baseUrl + bugInputData.id, bugInputData);
+                        } else {
+                            promise = $http.post(_baseUrl, bugInputData);
+                        }
+                        return promise.then(function(bugData){
+                            return bug(bugData);
+                        });
+                    }
+                }
+            }
+            //providerFactory
+            return {
+                setBaseUrl : function(baseUrl){
+                    _baseUrl = baseUrl;
+                },
+                $get : bugServiceFactory
+            }
+        });
+        bugTrackerApp.service("dummyService", function(){
+        });
+        bugTrackerApp.config(function(bugServiceProvider, bugProvider, dummyServiceProvider){
+            console.log("configuration phase");
+            console.log("bugServiceProvider = ", bugServiceProvider);
+            bugServiceProvider.setBaseUrl('/issues/');
+            console.log("bugProvider = ", bugProvider);
+            console.log("dummyServiceProvider = ", dummyServiceProvider);
+        });
+        bugTrackerApp.run(function(bugService){
+            console.log("run phase");
+            console.log(bugService);
+        });
 
         bugTrackerApp.controller("bugsController", function($scope, bug, bugService){
-             $scope.bugs = [];
-            bugService.getAll()
+            $scope.bugs = [];
+            var p = bugService.getAll();
+            p.then(function(bugs){
+                $scope.bugs = bugs;
+            });
+
             $scope.addNew = function(newBugName){
                 var newBug = bug({
                     name : newBugName,
                     isClosed : false
                 });
-                $scope.bugs.push(newBug);
+                bugService.save(newBug).then(function(bug){
+                    $scope.bugs.push(bug);
+                })
             };
 
             $scope.toggleBug = function(bug){
                 bug.toggle();
+                bugService.save(bug);
             };
 
             $scope.removeClosed = function(){
