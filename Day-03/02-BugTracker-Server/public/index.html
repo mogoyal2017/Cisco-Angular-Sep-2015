@@ -99,9 +99,22 @@
             }
         });
 
-        bugTrackerApp.controller("bugsController", function($scope, bug){
-             $scope.bugs = [];
+        bugTrackerApp.factory("bugService", function($http, bug){
+            return {
+                getAll : function(){
+                    var promise = $http.get('/bugs/');
+                    promise.then(function(response){
+                        $scope.bugs = response.data.map(function(dataObj){
+                            return bug(dataObj);
+                        });
+                    });
+                }
+            }
+        })
 
+        bugTrackerApp.controller("bugsController", function($scope, bug, bugService){
+             $scope.bugs = [];
+            bugService.getAll()
             $scope.addNew = function(newBugName){
                 var newBug = bug({
                     name : newBugName,

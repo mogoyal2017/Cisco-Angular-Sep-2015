@@ -4,19 +4,19 @@
       "id": 1,
       "name": "Data Persistence inconsistent",
       "isClosed": true,
-      "createdAt" : "2015-09-23T09:21:27.909Z"
+      "createdAt": "2015-09-23T09:21:27.909Z"
     },
     {
       "id": 2,
       "name": "Object reference not found",
       "isClosed": false,
-      "createdAt" : "2015-09-22T09:21:27.909Z"
+      "createdAt": "2015-09-22T09:21:27.909Z"
     },
     {
       "id": 3,
       "name": "Stack overflow error",
       "isClosed": false,
-      "createdAt" : "2015-09-21T09:21:27.909Z"
+      "createdAt": "2015-09-21T09:21:27.909Z"
     }
   ]
 }
