@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Routing Demo</title>
+    <script src="angular.js"></script>
+    <script src="angular-route.js"></script>
+    <script>
+        var routingApp = angular.module("routingApp", ["ngRoute"]);
+        routingApp.config(function($routeProvider){
+            $routeProvider
+                .when("/products", {
+                    //template : "<h2>Products</h2>"
+                    templateUrl : "templates/products.html",
+                    controller : "productsController"
+                })
+                .when("/products/:pId", {
+                    templateUrl : "templates/productInfo.html",
+                    controller : "productInfoController"
+                })
+                .when("/customers", {
+                    //template : "<h2>Customers</h2>"
+                    templateUrl : "templates/customers.html"
+                })
+                .otherwise({
+                    redirectTo : "/products"
+                });
+        });
+        routingApp.service("productsService", function(){
+            this.getAll = function(){
+                return [
+                    {id : 1, name : 'Pen', cost : 20, units : 20, desc : 'Incurreret amet senserit ingeniis ex ne arbitror iis nescius, pariatur ita ipsum quamquam in sunt officia quo illum esse. Ita eiusmod ne incurreret, magna eu o eram aliquip, o iis arbitrantur do sed quid ex cillum. Dolore expetendis a mentitum. Nescius fidelissimae ea officia, nisi occaecat iudicem ab ita mandaremus eu tempor qui et multos consectetur. Litteris ipsum laborum consequat nam de iudicem arbitrantur, enim an o nisi fabulas quo ex quem cohaerescant ne ullamco quo excepteur hic nulla consequat a reprehenderit ut do proident transferrem ubi duis ea arbitror iis aliqua. Quem ut ex eram aliquip aut eu est fugiat probant, nisi praesentibus appellat anim quibusdam, laborum aut sunt, do '},
+                    {id : 2, name : 'Hen', cost : 100, units : 10, desc : 'Incurreret amet senserit ingeniis ex ne arbitror iis nescius, pariatur ita ipsum quamquam in sunt officia quo illum esse. Ita eiusmod ne incurreret, magna eu o eram aliquip, o iis arbitrantur do sed quid ex cillum. Dolore expetendis a mentitum. Nescius fidelissimae ea officia, nisi occaecat iudicem ab ita mandaremus eu tempor qui et multos consectetur. Litteris ipsum laborum consequat nam de iudicem arbitrantur, enim an o nisi fabulas quo ex quem cohaerescant ne ullamco quo excepteur hic nulla consequat a reprehenderit ut do proident transferrem ubi duis ea arbitror iis aliqua. Quem ut ex eram aliquip aut eu est fugiat probant, nisi praesentibus appellat anim quibusdam, laborum aut sunt, do '},
+                    {id : 3, name : 'Ten', cost : 10, units : 10, desc : 'Incurreret amet senserit ingeniis ex ne arbitror iis nescius, pariatur ita ipsum quamquam in sunt officia quo illum esse. Ita eiusmod ne incurreret, magna eu o eram aliquip, o iis arbitrantur do sed quid ex cillum. Dolore expetendis a mentitum. Nescius fidelissimae ea officia, nisi occaecat iudicem ab ita mandaremus eu tempor qui et multos consectetur. Litteris ipsum laborum consequat nam de iudicem arbitrantur, enim an o nisi fabulas quo ex quem cohaerescant ne ullamco quo excepteur hic nulla consequat a reprehenderit ut do proident transferrem ubi duis ea arbitror iis aliqua. Quem ut ex eram aliquip aut eu est fugiat probant, nisi praesentibus appellat anim quibusdam, laborum aut sunt, do '},
+                    {id : 4, name : 'Den', cost : 200, units : 5, desc : 'Incurreret amet senserit ingeniis ex ne arbitror iis nescius, pariatur ita ipsum quamquam in sunt officia quo illum esse. Ita eiusmod ne incurreret, magna eu o eram aliquip, o iis arbitrantur do sed quid ex cillum. Dolore expetendis a mentitum. Nescius fidelissimae ea officia, nisi occaecat iudicem ab ita mandaremus eu tempor qui et multos consectetur. Litteris ipsum laborum consequat nam de iudicem arbitrantur, enim an o nisi fabulas quo ex quem cohaerescant ne ullamco quo excepteur hic nulla consequat a reprehenderit ut do proident transferrem ubi duis ea arbitror iis aliqua. Quem ut ex eram aliquip aut eu est fugiat probant, nisi praesentibus appellat anim quibusdam, laborum aut sunt, do '}
+                ]
+            };
+        });
+        routingApp.controller("productsController", function($scope, productsService){
+            $scope.products = productsService.getAll();
+        });
+        routingApp.controller("productInfoController", function($scope, productsService, $routeParams){
+            var productId = parseInt($routeParams.pId, 10);
+            $scope.product = productsService.getAll().filter(function(product){
+                return product.id === productId;
+            })[0];
+        });
+    </script>
+</head>
+<body ng-app="routingApp">
+    <h1>Flopkart</h1>
+    <a href="#/products">Products</a>  <a href="#/customers">Customers</a>
+    <hr>
+    <div ng-view></div>
+</body>
+</html>
